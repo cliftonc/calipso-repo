@@ -67,7 +67,7 @@
                       %>
                       <p>To install this module, use the following command from an installed calipso site:</p>
                         <pre class='prettyprint'>
-calipso modules install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+calipso modules download <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
                         </pre>
                       <%
                       break;
@@ -75,7 +75,7 @@ calipso modules install <%= version.url + ((version.version !== "master") ? "@" 
                       %>
                       <p>To install this theme, use the following command from an installed calipso site:</p>
                         <pre class='prettyprint'>
-calipso themes install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+calipso themes download <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
                         </pre>
                       <%
                       break;
@@ -83,7 +83,7 @@ calipso themes install <%= version.url + ((version.version !== "master") ? "@" +
                       %>
                         <p>To install this profile, use the following command from an installed calipso site:</p>
                         <pre class='prettyprint'>
-calipso profiles install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+calipso profiles download <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
                         </pre>
                       <%
                       break;
