@@ -32,7 +32,7 @@
             item.versions.forEach(function(version) {
               %>
               <li class="vertical-tab">
-                <a href="#<%= version.version.replace(".","_") %>"><%= version.version %></a>
+                <a href="#<%= version.version.replace(/\./g,"_") %>"><%= version.version %></a>
               </li><%
             });
           %>
@@ -50,7 +50,7 @@
         <%
             item.versions.forEach(function(version) {
               %>
-              <section id="<%= version.version.replace(".","_") %>" class="vertical-tab-content">
+              <section id="<%= version.version.replace(/\./g,"_") %>" class="vertical-tab-content">
                 <h3>Details</h3>
                 <table>
                   <tr><th width=100>Version:</th><td><%= version.version %></td></tr>
