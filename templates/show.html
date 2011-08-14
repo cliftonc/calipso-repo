@@ -1,0 +1,109 @@
+<div class="repo-show">
+  <div class="repo-show-left">
+    <h1><%= item.type %>: <%= item.name %></h1>
+  </div>
+  <div class="repo-show-right" style="text-align: right">
+    <a href="/repo"><< Repository Home</a> |
+    <a href="/repo/module">Modules</a> |
+    <a href="/repo/theme">Themes</a> |
+    <a href="/repo/profile">Profiles</a>
+  </div>
+  <div style="clear: both"></div>
+  <div class="repo-show-left">
+    <ul>
+      <li><%= t('Author') %>: <%= item.author %></li>
+      <li><%= t('Created') %>: <%= prettyDate(item.created) %></li>
+    </ul>
+    <div class="repo-show-about">
+      <h2>About:</h2>
+      <%= item.description %>
+    </div>
+    <div class="repo-show-images">
+      <h2>Images:</h2>
+      <p>Coming soon ...</p>
+    </div>
+  </div>
+  <div class="repo-show-right">
+    <h2>Versions</h2>
+    <div class="repo-show-versions">
+      <nav>
+        <ul class="vertical-tabs">
+          <%
+            item.versions.forEach(function(version) {
+              %>
+              <li class="vertical-tab">
+                <a href="#<%= version.version.replace(".","_") %>"><%= version.version %></a>
+              </li><%
+            });
+          %>
+          <% if(versionForm) { %>
+          <li class="veritcal-tab">
+            <a href="#new-version">New Version</a>
+          </li>
+          <% } %>
+        </ul>
+      </nav>
+      <div class="vertical-tab-container">
+        <% if(!versionForm && (item.versions.length === 0)) { %>
+          <p style="text-align: center; padding: 50px;">No versions have been defined yet!</p>
+        <% } %>
+        <%
+            item.versions.forEach(function(version) {
+              %>
+              <section id="<%= version.version.replace(".","_") %>" class="vertical-tab-content">
+                <h3>Details</h3>
+                <table>
+                  <tr><th width=100>Version:</th><td><%= version.version %></td></tr>
+                  <tr><th>URL:</th><td><%= version.url %></td></tr>
+                  <tr><th>Comments:</th><td><%= version.comments %></td></tr>
+                  <tr><th>Calipso Versions:</th><td><%= version.calipsoVersion %></td></tr>
+                  <tr><th>Created:</th><td><%= prettyDate(version.created) %></td></tr>
+                  <tr><th>Updated:</th><td><%= prettyDate(version.updated) %></td></tr>
+                </table>
+                <h3>How do I install this?</h3>
+                 <%
+                  switch(item.type) {
+                    case "module":
+                      %>
+                      <p>To install this module, use the following command from an installed calipso site:</p>
+                        <pre class='prettyprint'>
+calipso modules install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+                        </pre>
+                      <%
+                      break;
+                    case "theme":
+                      %>
+                      <p>To install this theme, use the following command from an installed calipso site:</p>
+                        <pre class='prettyprint'>
+calipso themes install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+                        </pre>
+                      <%
+                      break;
+                    case "profile":
+                      %>
+                        <p>To install this profile, use the following command from an installed calipso site:</p>
+                        <pre class='prettyprint'>
+calipso profiles install <%= version.url + ((version.version !== "master") ? "@" + version.version : "") %>
+                        </pre>
+                      <%
+                      break;
+                  }
+                  %>
+                 <% if(versionForm) { %>
+                  <h3>Administer</h3>
+                  <a href="/repo/version/delete/<%- item.type %>/<%- item.name %>/<%- version._id %>" class="delete">Delete</a>
+                  &nbsp;<i>Edit is on its way, please re-create for now.</i>
+                <% } %>
+              </section>
+              <%
+            });
+          %>
+          <% if(versionForm) { %>
+          <section id="new-version" class="vertical-tab-content">
+            <%- versionForm %>
+          </section>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

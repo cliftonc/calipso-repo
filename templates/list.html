@@ -1,0 +1,39 @@
+<div class="home-content">
+      <div class="repo-show-left">
+    <h1>List of all <%- type %>s</h1>
+  </div>
+  <div class="repo-show-right" style="text-align: right">
+    <a href="/repo"><< Repository Home</a> |
+    <a href="/repo/module">Modules</a> |
+    <a href="/repo/theme">Themes</a> |
+    <a href="/repo/profile">Profiles</a>
+  </div>
+  <div style="clear: both"></div>
+    <table>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Author</th>
+      <th>Last Updated</th>
+    </tr>
+    <% all.forEach(function(item) { %>
+      <tr>
+        <td>
+          <a href="/repo/show/<%= item.type %>/<%= item.name %>"><%= item.name %></a>
+        </td>
+        <td>
+          <%= item.description %>
+        </td>
+        <td>
+          <%= item.author %>
+        </td>
+        <td>
+          <%= prettyDate(item.updated) %>
+        </td>
+      </tr>
+    <% }) %>
+    </table>
+    <% if (user.username) { %>
+      <a href="/repo/create/<%= type %>" style="float: left">Submit new <%= type %> ...</a>
+    <% } %>
+</div>
