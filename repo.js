@@ -65,7 +65,10 @@ function init(module, app, next) {
     // Admin forms
     module.router.addRoute('GET /repo/edit/:type/:name', repoUpdateForm, {user:true, block: 'content.repo.edit'}, this.parallel());
     module.router.addRoute('POST /repo/update', repoUpdate, {user:true}, this.parallel());
-    module.router.addRoute('GET /repo/delete/:type/:name', repoDelete, {user:true}, this.parallel());
+    module.router.addRoute('GET /repo/delete/:id', repoDelete, {user:true}, this.parallel());
+
+    // API
+    module.router.addRoute('GET /repo/api/:type/:name?', repoListJson, {}, this.parallel());
 
   }, function done() {
 
@@ -96,7 +99,7 @@ function init(module, app, next) {
     // Repository
     var Repo = new calipso.lib.mongoose.Schema({
       key:{type: String, required: true, index: { unique: true }},
-      name:{type: String, required: true, index: true},
+      name:{type: String, required: true, index: true, validate: /^\w*$/},
       type:{type: String, required: true, index: true, "default": 'module'},
       description:{type: String, "default": ''},
       author:{type: String, "default": ''},
@@ -214,6 +217,27 @@ function repoList(req, res, template, block, next) {
 
 };
 
+function repoListJson(req, res, template, block, next) {
+
+  var Repo = calipso.lib.mongoose.model('Repo');
+  var type = req.moduleParams.type || "module";
+  var name = req.moduleParams.name || "";
+
+  // TODO - Add pager
+  Repo.find({type:type})
+    .sort('name', 1)
+    .limit(100)
+    .find(function(err,all) {
+      res.format = "json";
+      var op = all.map(function(a) {
+          return {name:a.name,description:a.description};
+      });
+      res.write(op);
+      next();
+    });
+
+};
+
 /**
  * Show
  */
@@ -238,7 +262,7 @@ function repoShow(req, res, template, block, next) {
       if(isAuthor(req,r.author)) {
 
         res.menu.userToolbar.addMenuItem({name:'Edit',weight:1,path:'edit',url:'/repo/edit/' + type + '/' + name,description:'Edit ...',security:[]});
-        // res.menu.userToolbar.addMenuItem({name:'Delete',weight:2,path:'delete',url:'/repo/delete/' + type + '/' + name,description:'Delete ...',security:[]});
+        res.menu.userToolbar.addMenuItem({name:'Delete',cls:'delete',weight:2,path:'delete',url:'/repo/delete/' + r._id,description:'Delete ...',security:[]});
 
       }
 
@@ -308,7 +332,7 @@ function repoCreate(req, res, template, block, next) {
             calipso.debug(err);
             req.flash('error',req.t('Could not save new item into repository because {msg}.',{msg:err.message}));
             if(res.statusCode != 302) {
-                res.redirect('/repo/'+ r.type + '/create');
+                res.redirect('/repo/create/'+ r.type);
             }
             next();
           } else {
@@ -347,6 +371,8 @@ function repoUpdateForm(req, res, template, block, next) {
   form.fields.push({label:'',name:'repo[key]',type:'hidden'});
 
   var Repo = calipso.lib.mongoose.model('Repo');
+
+  console.dir(req.flash);
 
   Repo.findOne({key:key},function (err, r) {
     if(err || !r) {
@@ -424,7 +450,7 @@ function repoUpdate(req, res, template, block, next) {
                 calipso.debug(err);
                 req.flash('error',req.t('Could not update item into repository because {msg}.',{msg:err.message}));
                 if(res.statusCode != 302) {
-                    res.redirect('/repo/show/'+ key);
+                    res.redirect('/repo/edit/'+ key);
                 }
                 next();
               } else {
@@ -456,7 +482,36 @@ function repoUpdate(req, res, template, block, next) {
 function repoDelete(req, res, template, block, next) {
 
     // Render the item via the template provided above
-    next();
+  var Repo = calipso.lib.mongoose.model('Repo');
+  var id = req.moduleParams.id;
+
+  Repo.findById(id, function(err, r) {
+
+    // Raise CONTENT_CREATE event
+    calipso.e.pre_emit('REPO_DELETE',r);
+
+    // Only authors can delete
+    if(!isAuthor(req,r.author)) {
+      req.flash('error', req.t('You need to be the author or an administrator to perform that action.'));
+      res.statusCode = 401;
+      res.redirect("/repo/show/" + r.type + "/" + r.name);
+      next();
+      return;
+    }
+
+    Repo.remove({_id:id}, function(err) {
+      if(err) {
+        req.flash('info',req.t('Unable to delete the item because {msg}',{msg:err.message}));
+        res.redirect("/repo/show/" + r.type + "/" + r.name);
+      } else {
+        calipso.e.post_emit('REPO_DELETE',r);
+        req.flash('info',req.t('The ' + r.type + ' has now been deleted.'));
+        res.redirect("/repo");
+      }
+      next();
+    });
+
+  });
 
 };
 

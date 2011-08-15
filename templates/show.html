@@ -54,7 +54,11 @@
                 <h3>Details</h3>
                 <table>
                   <tr><th width=100>Version:</th><td><%= version.version %></td></tr>
-                  <tr><th>URL:</th><td><%= version.url %></td></tr>
+                  <% if(!version.url.match(/^http.*/)) { %>
+                    <tr><th>Github:</th><td><a target="_blank" href="https://github.com/<%= version.url %>"><%= version.url %></a></td></tr>
+                  <% } else { %>
+                    <tr><th>URL:</th><td><a target="_blank" href="<%= version.url %>"><%= version.url %></a></td></tr>
+                  <% } %>
                   <tr><th>Comments:</th><td><%= version.comments %></td></tr>
                   <tr><th>Calipso Versions:</th><td><%= version.calipsoVersion %></td></tr>
                   <tr><th>Created:</th><td><%= prettyDate(version.created) %></td></tr>
