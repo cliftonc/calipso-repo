@@ -221,19 +221,22 @@ function repoListJson(req, res, template, block, next) {
 
   var Repo = calipso.lib.mongoose.model('Repo');
   var type = req.moduleParams.type || "module";
-  var name = req.moduleParams.name || "";
+  var name = req.moduleParams.name || /.*/;
 
   // TODO - Add pager
-  Repo.find({type:type})
+  Repo.find({type:type,name:name})
     .sort('name', 1)
     .limit(100)
     .find(function(err,all) {
-      res.format = "json";
       var op = all.map(function(a) {
-          return {name:a.name,description:a.description};
+          return {name:a.name,
+                  description:a.description,
+                  versions:a.versions.map(function(b){
+                      return {version:b.version,url:b.url}
+                  })
+          };
       });
-      res.write(op);
-      next();
+      res.end(JSON.stringify(op),'UTF-8');
     });
 
 };
