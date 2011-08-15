@@ -25,7 +25,7 @@
           <%= item.description %>
         </td>
         <td>
-          <%= item.author %>
+          <a href="/user/profile/<%= item.author %>"><%= item.author %></a>
         </td>
         <td>
           <%= prettyDate(item.updated) %>

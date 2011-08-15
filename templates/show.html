@@ -11,7 +11,7 @@
   <div style="clear: both"></div>
   <div class="repo-show-left">
     <ul>
-      <li><%= t('Author') %>: <%= item.author %></li>
+      <li><%= t('Author') %>: <a href="/user/profile/<%= item.author %>"><%= item.author %></a></li>
       <li><%= t('Created') %>: <%= prettyDate(item.created) %></li>
     </ul>
     <div class="repo-show-about">

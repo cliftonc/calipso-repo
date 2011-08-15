@@ -133,7 +133,7 @@ function repoForm() {
               {label:'Name',name:'repo[name]',type:'text',description:'Enter the name of your module or theme (no spaces or invalid chars).'},
               {label:'Type',name:'repo[type]',type:'select',options:[{label:"Module",value:"module"},{label:"Theme",value:"theme"},{label:"Profile",value:"profile"}],description:'What is it?'},
               {label:'Description',name:'repo[description]',type:'textarea',description:'Provide a description so others understand what youre trying to do.'},
-              {label:'Author',name:'repo[author]',type:'text',description:'Enter your name.',readonly:true}
+              {label:'Author',name:'repo[author]',type:'text',description:'Enter your name.',readonly:false}
              ],
       buttons:[
            {name:'submit',type:'submit',value:'Submit'}
