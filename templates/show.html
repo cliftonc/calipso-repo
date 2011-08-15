@@ -103,7 +103,7 @@ calipso profiles download <%= version.url + ((version.version !== "master") ? "@
             });
           %>
           <% if(versionForm) { %>
-          <section id="new-version" class="vertical-tab-content">
+          <section id="new-version" class="vertical-tab-content" style="display:none;">
             <%- versionForm %>
           </section>
         <% } %>
