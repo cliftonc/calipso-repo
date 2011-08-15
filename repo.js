@@ -175,7 +175,7 @@ function repoHome(req, res, template, block, next) {
                 .sort('name', 1)
                 .limit(20)
                 .find(function(err,themes) {
-                    Repo.find({type:'profiles'})
+                    Repo.find({type:'profile'})
                     .sort('updated', -1)
                     .sort('type', 1)
                     .sort('name', 1)
