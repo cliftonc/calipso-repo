@@ -159,7 +159,6 @@ function repoHome(req, res, template, block, next) {
   var Repo = calipso.lib.mongoose.model('Repo');
 
   Repo.find({})
-    .sort('type', 1)
     .sort('name', 1)
     .limit(100)
     .find(function(err,all) {
