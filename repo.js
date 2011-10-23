@@ -68,7 +68,8 @@ function init(module, app, next) {
     module.router.addRoute('GET /repo/delete/:id', repoDelete, {user:true}, this.parallel());
 
     // API
-    module.router.addRoute('GET /repo/api/:type/:name?', repoListJson, {}, this.parallel());
+    module.router.addRoute('GET /repo/api/find/:type/:query?', repoFindJson, {}, this.parallel());
+    module.router.addRoute('GET /repo/api/get/:type/:name/:version?', repoGetJson, {}, this.parallel());
 
   }, function done() {
 
@@ -182,7 +183,7 @@ function repoHome(req, res, template, block, next) {
                     .find(function(err,profiles) {
                         calipso.theme.renderItem(req,res,template,block,{
                            all:all,
-                           themes:themes,
+                           thms:themes,
                            mods:mods, // modules is protected!
                            profiles:profiles
                        },next);
@@ -194,7 +195,7 @@ function repoHome(req, res, template, block, next) {
 };
 
 /**
- * Simple home page function
+ * List all items from the repostiory
  */
 function repoList(req, res, template, block, next) {
 
@@ -216,23 +217,58 @@ function repoList(req, res, template, block, next) {
 
 };
 
-function repoListJson(req, res, template, block, next) {
+/**
+ * API : Get a specific item from the repo
+ */
+function repoGetJson(req, res, template, block, next) {
 
   var Repo = calipso.lib.mongoose.model('Repo');
   var type = req.moduleParams.type || "module";
-  var name = req.moduleParams.name || /.*/;
+  var name = req.moduleParams.name || "";
+  var version = req.moduleParams.version || "master";
 
   // TODO - Add pager
-  Repo.find({type:type,name:name})
+  Repo.find({type:type, name:name})
     .sort('name', 1)
-    .limit(100)
+    .limit(10)
+    .find(function(err,all) {
+      var op = all.map(function(a) {
+        return {name:a.name,
+                description:a.description,
+                versions:a.versions.map(function(b){
+                    return {version:b.version,url:b.url}
+                })
+        };
+      });
+      res.end(JSON.stringify(op),'UTF-8');
+    });
+
+};
+
+/**
+ * API : Search the repository
+ */
+function repoFindJson(req, res, template, block, next) {
+
+  var Repo = calipso.lib.mongoose.model('Repo');
+  var query = req.moduleParams.query || "*";
+  var type = req.moduleParams.type || "module";
+
+  // Deal with wildcards
+  var qryRegex = new RegExp(query,"ig");
+
+  Repo.find({type:type, $or: [{name: qryRegex}, {description: qryRegex}] })
+    .sort('name', 1)
+    .limit(10)
     .find(function(err,all) {
       var op = all.map(function(a) {
           return {name:a.name,
                   description:a.description,
+                  author:a.author,
                   versions:a.versions.map(function(b){
                       return {version:b.version,url:b.url}
                   })
+
           };
       });
       res.end(JSON.stringify(op),'UTF-8');
@@ -303,7 +339,7 @@ function repoCreateForm(req, res, template, block, next) {
   var values = {
     repo: {
       type:type,
-      author:calipso.helpers.user.username
+      author:req.helpers.user.username
     }
   }
 

@@ -1,5 +1,6 @@
 {
   "name": "repo",
+  "label": "Repo",
   "description": "Calipso core module to provide repository UI functions",
   "version": "0.2.0",
   "homepage": "http://calip.so",

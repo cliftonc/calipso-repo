@@ -1,9 +1,10 @@
-<div class="home-content">
-  <div class="home-welcome">
+
+  <div class="home-welcome sixteen columns">
     <h2><%- t('Calipso Repository') %></h2>
     <p>This is the current list of modules, themes and profiles registered for use within Calipso.  If you've created your own, please register and you can submit your own module, theme or profile to be listed here, it's very easy - you just need to point this at your github page.</p>
   </div>
-  <div class="repo-column home-col1">
+  <br class="clear"/>
+  <div class="one-third column alpha repo-home">
     <h3>Latest Modules</h3>
     <table>
     <% mods.forEach(function(item) { %>
@@ -25,10 +26,13 @@
     <% } %>
     <a href="/repo/module"  style="float: right">... view all modules</a>
   </div>
-  <div class="repo-column home-col2">
+  <div class="one-third column repo-home">
     <h3>Latest Themes</h3>
     <table>
-    <% themes.forEach(function(item) { %>
+    <%
+    thms.forEach(function(item) {
+
+      %>
        <tr>
         <td>
           <a href="/repo/show/<%= item.type %>/<%= item.name %>"><%= item.name %></a>
@@ -47,7 +51,7 @@
     <% } %>
     <a href="/repo/theme"  style="float: right">... view all themes</a>
   </div>
-  <div class="repo-column home-col3">
+  <div class="one-third column omega repo-home">
     <h3>Latest Profiles</h3>
     <table>
     <% profiles.forEach(function(item) { %>
@@ -69,8 +73,8 @@
     <% } %>
     <a href="/repo/profile"  style="float: right">... view all profiles</a>
   </div>
-  <div style="clear:both"></div>
-  <div>
+  <br class="clear">
+  <div style="sixteen columns">
     <h2>All Modules, Themes & Profiles</h2>
     <div  class="repo-all">
      <% all.forEach(function(item) { %>
@@ -78,4 +82,3 @@
     <% }) %>
     </div>
   </div>
-</div>
