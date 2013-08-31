@@ -24,7 +24,7 @@ exports = module.exports = {
 function route(req, res, module, app, next) {
 
   // Menu items
-  res.menu.primary.addMenuItem({name:'Repository',path:'repo',url:'/repo',description:'Module and theme repository ...',security:[]});
+  res.menu.primary.addMenuItem(req, {name:'Repository',path:'repo',url:'/repo',description:'Module and theme repository ...',security:[]});
 
   // Router
   module.router.route(req, res, next);
@@ -74,7 +74,6 @@ function init(module, app, next) {
   }, function done() {
 
     // Repository schemas
-
     // Versions
     var RepoVersion = new calipso.lib.mongoose.Schema({
        version:{type: String, required: true, "default": '0.0.1'},
@@ -85,7 +84,7 @@ function init(module, app, next) {
        created: { type: Date, "default": Date.now },
        updated: { type: Date, "default": Date.now }
     });
-    calipso.lib.mongoose.model('RepoVersion', RepoVersion);
+    calipso.db.model('RepoVersion', RepoVersion);
 
     // Comments
     var RepoComment = new calipso.lib.mongoose.Schema({
@@ -95,7 +94,7 @@ function init(module, app, next) {
        created: { type: Date, "default": Date.now },
        updated: { type: Date, "default": Date.now }
     });
-    calipso.lib.mongoose.model('RepoComment', RepoComment);
+    calipso.db.model('RepoComment', RepoComment);
 
     // Repository
     var Repo = new calipso.lib.mongoose.Schema({
@@ -110,7 +109,7 @@ function init(module, app, next) {
       created: { type: Date, "default": Date.now },
       updated: { type: Date, "default": Date.now }
     });
-    calipso.lib.mongoose.model('Repo', Repo);
+    calipso.db.model('Repo', Repo);
 
     next();
 
@@ -157,7 +156,7 @@ function repoCommentForm() {
  */
 function repoHome(req, res, template, block, next) {
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
 
   Repo.find({})
     .sort('name', 1)
@@ -199,7 +198,7 @@ function repoHome(req, res, template, block, next) {
  */
 function repoList(req, res, template, block, next) {
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
   var type = req.moduleParams.type || "module";
 
   // TODO - Add pager
@@ -222,7 +221,7 @@ function repoList(req, res, template, block, next) {
  */
 function repoGetJson(req, res, template, block, next) {
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
   var type = req.moduleParams.type || "module";
   var name = req.moduleParams.name || "";
   var version = req.moduleParams.version || "master";
@@ -250,7 +249,7 @@ function repoGetJson(req, res, template, block, next) {
  */
 function repoFindJson(req, res, template, block, next) {
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
   var query = req.moduleParams.query || "*";
   var type = req.moduleParams.type || "module";
 
@@ -286,7 +285,7 @@ function repoShow(req, res, template, block, next) {
   var name = req.moduleParams.name || 'unknown';
   var key = type + "/" + name;
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo =calipso.db.model('Repo');
 
   Repo.findOne({key:key},function (err, r) {
 
@@ -359,7 +358,7 @@ function repoCreate(req, res, template, block, next) {
 
     if(form) {
 
-      var Repo = calipso.lib.mongoose.model('Repo');
+      var Repo = calipso.db.model('Repo');
       var r = new Repo(form.repo);
       r.key = r.type + "/" + r.name;
 
@@ -408,7 +407,7 @@ function repoUpdateForm(req, res, template, block, next) {
   form.title = "Update " + type + " " + name + " ...";
   form.fields.push({label:'',name:'repo[key]',type:'hidden'});
 
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
 
   console.dir(req.flash);
 
@@ -456,7 +455,7 @@ function repoUpdate(req, res, template, block, next) {
       var origType = form.repo.key.split(":")[0];
       var origName = form.repo.key.split(":")[1];
 
-      var Repo = calipso.lib.mongoose.model('Repo');
+      var Repo =calipso.db.model('Repo');
 
       Repo.findOne({key:key},function (err, r) {
 
@@ -520,7 +519,7 @@ function repoUpdate(req, res, template, block, next) {
 function repoDelete(req, res, template, block, next) {
 
     // Render the item via the template provided above
-  var Repo = calipso.lib.mongoose.model('Repo');
+  var Repo = calipso.db.model('Repo');
   var id = req.moduleParams.id;
 
   Repo.findById(id, function(err, r) {
