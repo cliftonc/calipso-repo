@@ -159,25 +159,19 @@ function repoHome(req, res, template, block, next) {
   var Repo = calipso.db.model('Repo');
 
   Repo.find({})
-    .sort('name', 1)
+    .sort('name')
     .limit(100)
     .find(function(err,all) {
         Repo.find({type:'module'})
-          .sort('updated', -1)
-          .sort('type', 1)
-          .sort('name', 1)
+          .sort('-updated type name')
           .limit(20)
           .find(function(err,mods) {
               Repo.find({type:'theme'})
-                .sort('updated', -1)
-                .sort('type', 1)
-                .sort('name', 1)
+                .sort('-updated type name')
                 .limit(20)
                 .find(function(err,themes) {
                     Repo.find({type:'profile'})
-                    .sort('updated', -1)
-                    .sort('type', 1)
-                    .sort('name', 1)
+                    .sort('-updated type name')
                     .limit(20)
                     .find(function(err,profiles) {
                         calipso.theme.renderItem(req,res,template,block,{
@@ -204,7 +198,7 @@ function repoList(req, res, template, block, next) {
   // TODO - Add pager
 
   Repo.find({type:type})
-    .sort('name', 1)
+    .sort('name')
     .limit(100)
     .find(function(err,all) {
         calipso.theme.renderItem(req,res,template,block,{
@@ -228,7 +222,7 @@ function repoGetJson(req, res, template, block, next) {
 
   // TODO - Add pager
   Repo.find({type:type, name:name})
-    .sort('name', 1)
+    .sort('name')
     .limit(10)
     .find(function(err,all) {
       var op = all.map(function(a) {
@@ -257,7 +251,7 @@ function repoFindJson(req, res, template, block, next) {
   var qryRegex = new RegExp(query,"ig");
 
   Repo.find({type:type, $or: [{name: qryRegex}, {description: qryRegex}] })
-    .sort('name', 1)
+    .sort('name')
     .limit(10)
     .find(function(err,all) {
       var op = all.map(function(a) {
