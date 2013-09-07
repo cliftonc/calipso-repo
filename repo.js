@@ -24,7 +24,7 @@ exports = module.exports = {
 function route(req, res, module, app, next) {
 
   // Menu items
-  res.menu.primary.addMenuItem(req, {name:'Repository',path:'repo',url:'/repo',description:'Module and theme repository ...',security:[]});
+  res.menu.primary.addMenuItem(req, {name:'Repository',path:'repo',url:'/repo',description:'Module and theme repository ...',permit:"admin:core:configuration"});
 
   // Router
   module.router.route(req, res, next);
@@ -292,8 +292,8 @@ function repoShow(req, res, template, block, next) {
 
       if(isAuthor(req,r.author)) {
 
-        res.menu.userToolbar.addMenuItem({name:'Edit',weight:1,path:'edit',url:'/repo/edit/' + type + '/' + name,description:'Edit ...',security:[]});
-        res.menu.userToolbar.addMenuItem({name:'Delete',cls:'delete',weight:2,path:'delete',url:'/repo/delete/' + r._id,description:'Delete ...',security:[]});
+        res.menu.userToolbar.addMenuItem(req, {name:'Edit',weight:1,path:'edit',url:'/repo/edit/' + type + '/' + name,description:'Edit ...',permit:'admin:core:configuration'});
+        res.menu.userToolbar.addMenuItem(req, {name:'Delete',cls:'delete',weight:2,path:'delete',url:'/repo/delete/' + r._id,description:'Delete ...',permit:'admin:core:configuration'});
 
       }
 
